@@ -8,5 +8,6 @@ namespace backend.Repositories
   {
     public Post GetPostById(int id);
     public IQueryable<Post> GetPosts();
+    public void CreatePost(Post post);
   }
 }

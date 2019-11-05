@@ -22,5 +22,11 @@ namespace backend.Repositories
     {
       return _context.Users;
     }
+
+    public void CreateUser(User user)
+    {
+      _context.Users.Add(user);
+      _context.SaveChanges();
+    }
   }
 }

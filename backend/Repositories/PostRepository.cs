@@ -21,5 +21,11 @@ namespace backend.Repositories
     {
       return _context.Posts;
     }
+
+    public void CreatePost(Post post)
+    {
+      _context.Posts.Add(post);
+      _context.SaveChanges();
+    }
   }
 }

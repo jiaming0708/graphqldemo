@@ -8,5 +8,6 @@ namespace backend.Repositories
   {
     public User GetUserById(int id);
     public IQueryable<User> GetUsers();
+    public void CreateUser(User user);
   }
 }

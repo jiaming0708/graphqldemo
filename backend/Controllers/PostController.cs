@@ -11,12 +11,12 @@ namespace backend.Controllers
 {
   [ApiController]
   [Route("[controller]")]
-  public class BloggingController : ControllerBase
+  public class PostController : ControllerBase
   {
-    private readonly ILogger<WeatherForecastController> _logger;
+    private readonly ILogger<PostController> _logger;
     private readonly IPostRepository _postRepository;
 
-    public BloggingController(ILogger<WeatherForecastController> logger, IPostRepository postRepository)
+    public PostController(ILogger<PostController> logger, IPostRepository postRepository)
     {
       _logger = logger;
       _postRepository = postRepository;
@@ -26,6 +26,12 @@ namespace backend.Controllers
     public IEnumerable<Post> Get()
     {
       return _postRepository.GetPosts().ToList();
+    }
+
+    [HttpPost]
+    public void CreatePost(Post post)
+    {
+      _postRepository.CreatePost(post);
     }
   }
 }
