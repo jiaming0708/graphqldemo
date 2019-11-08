@@ -2,12 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using backend.GraphModels;
 using backend.Models;
 using backend.Repositories;
+using GraphQL.Server;
+using GraphQL.Types;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,6 +37,18 @@ namespace backend
       services.AddScoped<IUserRepository, UserRepostiory>();
       services.AddDbContext<BloggingContext>(options => options.UseSqlite(Configuration.GetConnectionString("Database")));
 
+      // graphql
+      services.AddTransient<PostType>();
+      services.AddTransient<UserType>();
+      services.AddScoped<BloggingQuery>();
+      services.AddScoped<ISchema, BloggingSchema>();
+      services.AddHttpContextAccessor();
+      services.AddGraphQL(_ =>
+      {
+        _.EnableMetrics = true;
+        _.ExposeExceptions = true;
+      });
+
       services.AddControllers();
 
       services.AddCors(options =>
@@ -40,6 +56,12 @@ namespace backend
         options.AddPolicy("cors",
           builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()
         );
+      });
+
+      // [reference for this issue](https://stackoverflow.com/questions/47735133/asp-net-core-synchronous-operations-are-disallowed-call-writeasync-or-set-all)
+      services.Configure<KestrelServerOptions>(options =>
+      {
+        options.AllowSynchronousIO = true;
       });
     }
 
@@ -63,6 +85,8 @@ namespace backend
       {
         endpoints.MapControllers();
       });
+
+      app.UseGraphQL<ISchema>();
     }
   }
 }
